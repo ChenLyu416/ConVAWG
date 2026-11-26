@@ -1,0 +1,10 @@
+# Escalation forecasting — Qwen3.5-35B-A3B on the local vLLM server (port 8003)
+llm:
+  backend: "vllm"
+  model_name: "Qwen/Qwen3.5-35B-A3B"
+  base_url: "http://localhost:8003/v1"
+  api_key: "EMPTY"
+processing:
+  max_retries: 3
+  retry_delay: 5.0
+output_dir: "results_llm_baseline/qwen"

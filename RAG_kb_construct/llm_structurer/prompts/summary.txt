@@ -1,0 +1,33 @@
+You are an expert case summarization system for long documents involving VAWG.
+
+CASE TEXT:
+{case_text}
+
+========================
+LONG-DOCUMENT READING STRATEGY
+========================
+- Read the entire document before summarizing.
+- Use a multi-pass approach:
+  1) Identify main actors, violence types, and outcomes.
+  2) Integrate information from across the entire narrative.
+  3) Only then produce the summary.
+- Think internally; output only final JSON.
+- Perform a completeness check to ensure all key points are included.
+
+========================
+TASK
+========================
+Produce a 3–5 sentence summary that:
+- Identifies key actors (victims + perpetrators)
+- Describes the type(s) of violence
+- Notes major actions/events
+- Mentions outcomes (if stated)
+- Uses neutral, factual language
+- Preserves anonymization
+
+========================
+OUTPUT FORMAT
+========================
+{{
+  "summary": "Your 3-5 sentence summary here."
+}}

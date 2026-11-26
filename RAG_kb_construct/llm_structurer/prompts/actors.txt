@@ -1,0 +1,64 @@
+You are an expert information extraction system specialized in analyzing legal case documents involving violence against women and girls (VAWG). Extract all actors (people) mentioned in the document and assign roles.
+
+CASE TEXT:
+{case_text}
+
+========================
+LONG-DOCUMENT EXTRACTION STRATEGY
+========================
+- Read the ENTIRE document before extracting anything.
+- Use a multi-pass approach:
+  1) Scan the full text for all potential actors, roles, mentions, and demographic attributes.
+  2) Internally map all references, aliases, pronouns, and coreference chains.
+  3) Only after integrating all evidence, generate the final JSON.
+- Think step-by-step internally but output ONLY the final JSON.
+- Treat the document as a sequence of sections and integrate information from all of them.
+- Before finalizing, perform an internal completeness and consistency check:
+  - Ensure all actors are extracted.
+  - Ensure no duplicates.
+  - Ensure all fields are grounded in the text.
+
+========================
+TASK
+========================
+Extract the following information for each actor:
+
+- actor_id: Unique identifier (e.g., "actor_1", "actor_2")
+- name: Name if given; otherwise use descriptors (e.g., “Anonymous”, “Victim”, “Defendant”)
+- role: One of: "victim", "perpetrator", "third_party", "witness", "legal_representative", "unknown"
+- age: Age if referenced; otherwise null
+- sex: Sex/gender if explicitly stated or unambiguously inferable; otherwise null
+- Ethnicity: Only if stated; never infer
+- Marital status: One of: "single", "married", "separated", "divorced", "widowed", "cohabiting", or null
+- occupation: If stated; otherwise null
+- demographics: Dictionary of additional demographic details, verbatim
+- mentions: List of all references, quotes, or paraphrases describing the actor
+
+========================
+OUTPUT FORMAT
+========================
+Return ONLY valid JSON using the following schema:
+
+{{
+  "actors": [
+    {{
+      "actor_id": "string",
+      "name": "string or null",
+      "role": "victim|perpetrator|third_party|witness|legal_representative|unknown",
+      "age": "string or null",
+      "sex": "string or null",
+      "Ethnicity": "string or null",
+      "Marital status": "single|married|separated|divorced|widowed|cohabiting|null",
+      "occupation": "string or null",
+      "demographics": {{}},
+      "mentions": ["string"]
+    }}
+  ]
+}}
+
+IMPORTANT RULES:
+- Extract ALL people mentioned.
+- Prioritize victims and perpetrators.
+- Use contextual clues but never hallucinate.
+- Preserve original wording for ages, occupations, and descriptors.
+- All fields must appear for every actor.

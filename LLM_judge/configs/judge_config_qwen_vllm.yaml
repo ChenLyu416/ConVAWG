@@ -1,0 +1,45 @@
+# LLM-as-Judge Configuration — Qwen3.5-35B-A3B via vLLM server
+# Start the server first (GPUs 1-4; qwen3_5_moe is native in vLLM >= 0.17,
+# do NOT pass --model-impl transformers):
+#   CUDA_VISIBLE_DEVICES=1,2,3,4 python -m vllm.entrypoints.openai.api_server \
+#       --model Qwen/Qwen3.5-35B-A3B --port 8003 --tensor-parallel-size 4
+# (or: Experiments/Baselines/start_vllm_baselines.sh qwen3.5-35b)
+# Local scorers run on CPU since all 4 GPUs are occupied by the server.
+
+llm:
+  backend: "vllm"
+  model_name: "Qwen/Qwen3.5-35B-A3B"
+  base_url: "http://localhost:8003/v1"
+  api_key: "EMPTY"
+  temperature: 0.1
+  max_tokens: 1024
+  max_retries: 3
+  retry_delay: 5.0
+
+processing:
+  max_retries: 3
+  retry_delay: 5
+  max_dialogue_chars: 6000
+  max_global_chars: 20000
+  skip_existing: true
+
+output:
+  output_dir: "./results"
+  pretty_json: true
+
+detoxify:
+  enabled: true
+  model_type: "original"
+  device: "cpu"
+  max_chars: 20000
+
+perplexity:
+  enabled: true
+  model_name: "gpt2"
+  device: "cpu"
+  max_length: 512
+  stride: 256
+  max_chars: 20000
+
+diversity:
+  enabled: true

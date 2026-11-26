@@ -1,0 +1,42 @@
+# ============================================================
+#  Persona-Relation Classification — LLM Zero-Shot Baselines
+#  Direct prompting: GPT-5.2, Gemini, DeepSeek
+#  API keys read from env: OPENAI_API_KEY, GEMINI_API_KEY, DEEPSEEK_API_KEY
+# ============================================================
+
+test_file: Experiments/Downstream_tasks/persona_relation/dataset/event_test.jsonl
+results_dir: Experiments/Downstream_tasks/persona_relation/results
+
+# Label set (must match relation_clf.yaml id2label)
+labels:
+  - intimate_partner
+  - ex_partner
+  - acquaintance
+  - professional
+  - family_or_other
+
+models:
+  - name: gpt-5.2
+    backend: openai
+    model_name: "gpt-5.2"
+    base_url: "https://api.openai.com/v1"
+    temperature: 0.0
+    max_tokens: 32
+    max_retries: 3
+    retry_delay: 5.0
+
+  - name: gemini-3.1-flash-lite
+    backend: gemini
+    model_name: "gemini-3.1-flash-lite"
+    temperature: 0.0
+    max_tokens: 32
+    max_retries: 3
+    retry_delay: 5.0
+
+  - name: deepseek-v4-flash
+    backend: deepseek
+    model_name: "deepseek-v4-flash"
+    temperature: 0.0
+    max_tokens: 32
+    max_retries: 3
+    retry_delay: 5.0

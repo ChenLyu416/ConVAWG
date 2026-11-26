@@ -1,0 +1,55 @@
+You are an expert information extraction system specialized in identifying interpersonal relationships in long case documents involving VAWG.
+
+CASE TEXT:
+{case_text}
+
+EXTRACTED ACTORS:
+{actors_json}
+
+========================
+LONG-DOCUMENT EXTRACTION STRATEGY
+========================
+- Read the full text before extracting.
+- Use a multi-pass approach:
+  1) Scan for relationship cues (family, intimate, ex-partner, professional, etc.).
+  2) Map pronouns, titles, aliases, and references to actor IDs.
+  3) Integrate all evidence globally before producing JSON.
+- Think step-by-step internally; output only JSON.
+- Before finalizing, ensure:
+  - All relationships are captured.
+  - No duplicates.
+  - actor_1_id < actor_2_id (consistent ordering).
+
+========================
+TASK
+========================
+For each relationship:
+
+- relationship_id: "rel_1", "rel_2", ...
+- actor_1_id, actor_2_id: IDs from EXTRACTED ACTORS
+- relationship_type: "intimate_partner", "ex_partner", "family", "acquaintance", "stranger", "professional", "other", "unknown"
+- description: Brief explanation, or null
+- temporal_info: “former”, “current”, etc., or null
+
+========================
+OUTPUT FORMAT
+========================
+Return ONLY valid JSON:
+
+{{
+  "relationships": [
+    {{
+      "relationship_id": "string",
+      "actor_1_id": "string",
+      "actor_2_id": "string",
+      "relationship_type": "intimate_partner|ex_partner|family|acquaintance|stranger|professional|other|unknown",
+      "description": "string or null",
+      "temporal_info": "string or null"
+    }}
+  ]
+}}
+
+IMPORTANT RULES:
+- Prioritize victim–perpetrator relationships.
+- Include family and professional relationships.
+- Only extract relationships explicitly supported by the text.

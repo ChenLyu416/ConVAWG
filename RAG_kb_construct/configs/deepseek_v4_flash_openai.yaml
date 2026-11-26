@@ -1,0 +1,19 @@
+# DeepSeek-V4-Flash via OpenAI-compatible endpoint (backbone ablation)
+# Requires DEEPSEEK_API_KEY (or OPENAI_API_KEY set to DeepSeek key) in environment.
+llm:
+  backend: "openai"
+  model_name: "deepseek-v4-flash"
+  temperature: 0.7
+  max_tokens: 4096
+  base_url: "https://api.deepseek.com"
+  api_key: null  # read from DEEPSEEK_API_KEY or OPENAI_API_KEY env var
+
+processing:
+  chunk_size: 5000
+  chunk_overlap: 500
+  max_retries: 3
+  retry_delay: 5
+
+paths:
+  cache_dir: "./model_cache"
+  output_dir: "./outputs"

@@ -1,0 +1,65 @@
+You are an expert system for classifying all types of violence/abuse in long VAWG-related case documents.
+
+CASE TEXT:
+{case_text}
+
+========================
+LONG-DOCUMENT EXTRACTION STRATEGY
+========================
+- Read the entire document before classifying.
+- Use a multi-pass approach:
+  1) Scan for all violence-related behaviors.
+  2) Map them to the taxonomy categories.
+  3) Only after full-document integration, output JSON.
+- Think step-by-step internally; output only final JSON.
+- Perform a completeness check: ensure all types with evidence are selected.
+
+========================
+TASK
+========================
+Assign all applicable violence types based on CPS VAWG strategy definitions:
+
+PRIMARY CATEGORIES:
+- physical (physical assault, violence, bodily harm)
+- sexual (general sexual offences)
+- rape (non-consensual penetration with penis)
+- sexual_assault (non-consensual sexual touching)
+- assault_by_penetration (non-consensual penetration with body part/object, not penis)
+- child_sexual_abuse (sexual abuse of persons under 18)
+- psychological (psychological abuse, intimidation)
+- emotional (emotional abuse, humiliation)
+- economic (economic abuse, financial control)
+- financial (exploitation of financial resources)
+- coercive_control (pattern of controlling/coercive behaviour under Serious Crime Act 2015)
+- stalking (Fixated, Obsessive, Unwanted, Repeated intrusive behaviour)
+- harassment (repeated behaviour causing alarm/distress)
+- cyberstalking (stalking via digital means)
+- digital (other digital/online abuse)
+- child_abuse_non_sexual (non-sexual maltreatment of persons under 18, including neglect, cruelty)
+- neglect (failure to provide care or prevent harm)
+- honor_based (honour-based abuse/violence)
+- forced_marriage (forcing someone into marriage without consent)
+- fgm (female genital mutilation)
+- trafficking (human trafficking, sexual exploitation)
+- exploitation (sexual or labour exploitation)
+- prostitution_related (controlling prostitution, related offences)
+- obscene_publications (distribution of obscene/extreme pornographic material)
+- other (other forms of VAWG not listed above)
+
+Include **brief evidence** for each selected type.
+
+========================
+OUTPUT FORMAT
+========================
+{{
+  "violence_types": ["type1", "type2"],
+  "explanations": {{
+    "type1": "evidence",
+    "type2": "evidence"
+  }}
+}}
+
+IMPORTANT RULES:
+- Only select types with clear evidence.
+- Use exact type names.
+- Every selected type must have an explanation.

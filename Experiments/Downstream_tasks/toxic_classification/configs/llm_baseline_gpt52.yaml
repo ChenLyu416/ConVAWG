@@ -1,0 +1,17 @@
+# Zero-shot LLM baseline — GPT-5.2
+# API key read from OPENAI_API_KEY env var
+
+llm:
+  backend: "openai"
+  model_name: "gpt-5.2"
+  temperature: 0.0
+  max_tokens: 16
+  base_url: "https://api.openai.com/v1"
+  api_key: null   # falls back to OPENAI_API_KEY
+
+processing:
+  max_retries: 3
+  retry_delay: 5.0
+  skip_existing: true
+
+output_dir: "results_llm_baseline/gpt52"

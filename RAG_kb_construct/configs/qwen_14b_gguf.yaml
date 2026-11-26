@@ -1,0 +1,25 @@
+# DHR knowledge-base extractor: Qwen2.5-14B-Instruct via a vLLM server.
+# This is the "extractor configuration" referred to in the paper's appendix.
+llm:
+  backend: "vllm"
+  model_name: "Qwen/Qwen2.5-14B-Instruct"
+  max_tokens: 2048
+  temperature: 0.3
+  tensor_parallel_size: 2
+  gpu_memory_utilization: 0.85
+  max_model_len: 32768
+  trust_remote_code: true
+  dtype: "auto"
+  json_retry_attempts: 2
+
+processing:
+  chunk_size: 5000
+  chunk_overlap: 200
+  enable_storage: false
+  output_formats:
+    - json
+
+paths:
+  prompts_dir: "llm_structurer/prompts"
+  output_dir: "outputs/qwen_14b_gguf"
+  db_path: "outputs/qwen_14b_gguf/cases.db"

@@ -1,0 +1,47 @@
+# Levelled Rewrite Configuration
+# ================================
+# Controls for the CAA-steered rewriting step (paper Stage 4; pipeline stage 6).
+# The mapping from escalation level to steering level is fixed:
+#   Escalation 2  →  Level 1  (mild)
+#   Escalation 3  →  Level 2  (moderate)
+#   Escalation 4  →  Level 3  (strong)
+# The per-level steering strengths (alpha) are read from the calibration file.
+
+# Which escalation levels to process
+escalation_levels: [2, 3, 4]
+
+# Per-level fraction of eligible perpetrator escalation-act messages to rewrite
+injection_ratio:
+  2: 0.05   # Level 2 (mild)
+  3: 0.10   # Level 3 (moderate)
+  4: 0.20   # Level 4 (severe)
+
+# Minimum messages to rewrite per conversation
+min_per_conversation: 1
+
+# Max generation attempts per message before giving up
+max_retries: 10
+
+# Random seed for sampling reproducibility
+seed: 42
+
+# ── Message labeling ───────────────────────────────────────
+# Set skip_labeling: true if input already has labeled_messages
+skip_labeling: false
+
+# Model for perpetrator message classification
+gpt_model: "gpt-5.2"
+gpt_temperature: 0.3
+# gpt_api_base: null  # uncomment to set a custom OpenAI-compatible base URL
+
+# ── Steering assets (required; not part of the public release) ─────────
+# See ../README.md for the file formats and the request route.
+# Paths are resolved relative to toxic_steering/.
+model: null          # HuggingFace id of the steered chat model
+vector_dir: null     # directory containing layer_{N}.pt (L2-normalised)
+calibration: null    # JSON: {"layer": N, "levels": {"1": a1, "2": a2, "3": a3}}
+prompts: null        # YAML following levelled_rewrite/prompts.example.yaml
+
+# Generation settings
+max_new_tokens: 512
+temperature: 0.95

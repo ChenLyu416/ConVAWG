@@ -1,0 +1,16 @@
+llm:
+  backend: "openai"
+  model_name: "gpt-5.2"
+  temperature: 0.1
+  max_tokens: 2048
+  base_url: "https://api.openai.com/v1"
+
+processing:
+  chunk_size: 5000
+  chunk_overlap: 500
+  max_retries: 2
+  retry_delay: 5
+
+paths:
+  cache_dir: "./model_cache"
+  output_dir: "./outputs"

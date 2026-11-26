@@ -1,0 +1,287 @@
+# ConVAWG generation pipeline configuration
+# ========================================
+# Controls all 8 pipeline stages. Paper stage ↔ pipeline stage:
+#   Paper Stage 1 (persona & scenario construction)  = stage 1
+#   Paper Stage 2 (hierarchical event planning)      = stages 2-4
+#   Paper Stage 3 (role-play dialogue generation)    = stage 5
+#   Paper Stage 4 (targeted toxicity injection)      = stage 6
+#   Formatting / cleaning and LLM-as-Judge evaluation = stages 7-8
+#
+# Directories are relative to the timestamped run directory
+# (Generation_Results/run_<timestamp>_<pid>/) unless absolute. A stage is
+# skipped when its output directory already contains *.json files.
+#
+# Model keys (gpt52, deepseek_v4_flash, gemini_flash_lite, qwen35_35b,
+# llama3_8b) select a backend config under
+# RAG_kb_construct/configs/. API backends read keys from the environment
+# (see .env.example); "vllm" backends expect an already-running vLLM server.
+
+# Global Settings
+global:
+  # Enable/disable each stage (set to false to skip a stage)
+  enable_stage_1: true  # Persona & Scenarios Generation
+  enable_stage_2: true  # Event Graph Extraction
+  enable_stage_3: true  # Event Graph Expansion
+  enable_stage_4: true  # Chat Script Generation
+  enable_stage_5: true  # Roleplay Dialogue Generation
+  enable_stage_6: false # CAA-Steered Toxic Rewrite — needs the withheld steering assets (toxic_steering/README.md)
+  enable_stage_7: true  # Convert Dialogues to Minimal Format
+  enable_stage_8: true  # LLM-as-Judge Dialogue Evaluation
+
+# Stage 1: VAWG Persona & Scenarios Generation
+stage_1_persona_generation:
+  # LLM model choice for persona generation
+  # Options: gpt52 (paper backbone), deepseek_v4_flash, gemini_flash_lite, qwen35_35b, llama3_8b
+  model: "gpt52"
+  
+  # Custom model config path (overrides 'model' if provided)
+  model_config: null
+  
+  # Zero-shot persona generation (generate without RAG retrieval)
+  # If true, skips retrieval from persona index
+  zero_shot: false
+  
+  # Number of retrieved documents when searching from persona index
+  # Only used when zero_shot is false
+  k_retrieval: 5
+  
+  # Output directory for generated personas and scenarios
+  # Relative to the timestamped run directory
+  output_dir: "persona_n_scenarios"
+
+  # Persona seeds CSV (repo-relative or absolute).
+  # null = persona_generate/VAWG_sampled_200_personas.csv (the 200 seeds used in the paper)
+  personas_csv: null
+
+  # Optional custom retrieval/index paths (repo-relative or absolute)
+  # persona_index_dir: "persona_generate/outputs/persona_index_full"
+  # kb_homicide_dir: "RAG_kb_construct/KB_homicide"
+  persona_index_dir: null
+  kb_homicide_dir: null
+
+  # Stage 1 post-processing (persona_generate/postprocess_scenarios.py): the two
+  # checks described in the paper (persona-scenario consistency refinement and
+  # name diversity). Set to false to skip.
+  enable_postprocess: true
+
+  # Model config file name under RAG_kb_construct/configs/
+  postprocess_model_config: "gpt52_openai.yaml"
+
+  # Optional output directory for post-processed personas.
+  # If null, post-processing runs in-place in stage_1 output_dir.
+  postprocess_output_dir: null
+
+# Stage 2: Event Graph Extraction from Summaries
+stage_2_event_graph:
+  # Input directory containing persona & scenario files
+  # This should match stage_1_persona_generation.output_dir
+  input_dir: "persona_n_scenarios"
+  
+  # Output directory for extracted event graphs
+  output_dir: "extracted_event_graphs"
+  
+  # LLM model choice for event extraction
+  # Options: gpt52, deepseek_v4_flash, gemini_flash_lite, qwen35_35b, llama3_8b
+  model: "gpt52"
+  
+  # Custom model config path (for HuggingFace backend)
+  model_config: null
+  
+  # API key for OpenAI backend (only needed for gpt52)
+  # Can also be set via GPT52_API_KEY environment variable
+  api_key: null
+
+# Stage 3: Event Graph Expansion
+stage_3_graph_expansion:
+  # Input directory containing event graph files
+  # This should match stage_2_event_graph.output_dir
+  input_dir: "extracted_event_graphs"
+  
+  # Output directory for expanded event graphs
+  output_dir: "expanded_event_graphs"
+  
+  # LLM model choice for graph expansion
+  # Options: gpt52, deepseek_v4_flash, gemini_flash_lite, qwen35_35b, llama3_8b
+  model: "gpt52"
+  
+  # Custom model config path (overrides 'model' if provided)
+  model_config: null
+
+# Stage 4: Chat Script Generation
+stage_4_chat_scripts:
+  # Input directory containing expanded event graphs
+  # This should match stage_3_graph_expansion.output_dir
+  input_dir: "expanded_event_graphs"
+  
+  # Output directory for generated chat scripts
+  output_dir: "chat_scripts"
+  
+  # LLM model choice for chat script generation
+  # Options: gpt52, deepseek_v4_flash, gemini_flash_lite, qwen35_35b, llama3_8b
+  model: "gpt52"
+  
+  # Custom model config path (overrides 'model' if provided)
+  model_config: null
+  
+  # Use LLM to generate actual conversations (if false, only creates prompts)
+  use_llm: true
+
+# Stage 5: Roleplay Dialogue Generation
+stage_5_roleplay_dialogue:
+  # Input directory containing chat scripts
+  # This should match stage_4_chat_scripts.output_dir
+  input_dir: "chat_scripts"
+  
+  # Output directory for generated dialogues
+  output_dir: "generated_dialogues"
+  
+  # LLM model choice for roleplay generation
+  # Options: gpt52, deepseek_v4_flash, gemini_flash_lite, qwen35_35b, llama3_8b
+  model: "gpt52"
+  
+  # Custom model config path (overrides 'model' if provided)
+  model_config: null
+  
+  # Directory containing persona JSON files (for character context)
+  # If null, will use stage_1_persona_generation.output_dir
+  persona_dir: null
+  
+  # Minimum number of speaking turns per character
+  min_turns: 2
+  
+  # Maximum number of speaking turns per character
+  max_turns: 10
+  
+  # Adjust dialogue length based on escalation level
+  adaptive_length: true
+  
+  # GPU configuration for vLLM (comma-separated GPU IDs)
+  gpus: "0,1,2"
+  
+  # Number of GPUs for tensor parallelism (vLLM only)
+  tensor_parallel_size: null
+  
+  # Post-processing options
+  enable_enforcer: true     # Rule-based enforcement (split messages, slang)
+
+  # Bare-prompt mode: omit role-specific style notes AND perpetrator red flags
+  # true  = send only the base generation prompt (no behavioral constraints)
+  # false = include style notes and red flags (default, recommended)
+  bare_prompt: false
+  
+  # Prompt template configuration
+  prompt_template: null     # Path to custom prompt template YAML (default: ./roleplay_prompt_template.yaml)
+  template_name: "edited_template_FINAL"  # Template variant in roleplay_prompt_template.yaml (paper setting)
+
+# Stage 6: CAA-Steered Toxic Rewrite (paper Stage 4)
+# Rewrites a sampled subset of perpetrator escalation-act messages with a
+# CAA-steered model at escalation-matched steering levels:
+#   Escalation 2 → Level 1 (mild), 3 → Level 2 (moderate), 4 → Level 3 (strong)
+# The steering vectors, calibration and rewriting prompts are not part of the
+# public release (see toxic_steering/README.md). Leave enable_stage_6: false
+# to generate the non-steered dialogues.
+stage_6_toxic_injection:
+  # Input directory containing generated dialogues
+  # This should match stage_5_roleplay_dialogue.output_dir
+  input_dir: "generated_dialogues"
+
+  # Output directory for CAA-steered rewritten dialogues
+  output_dir: "toxic_injected_dialogues"
+
+  # Steering assets — all required when stage 6 is enabled.
+  # Paths are relative to toxic_steering/ (or absolute).
+  model: null          # HuggingFace id of the steered chat model
+  calibration: null    # JSON: {"layer": N, "levels": {"1": a1, "2": a2, "3": a3}}
+  vector_dir: null     # directory containing layer_{N}.pt (L2-normalised)
+  prompts: null        # YAML following levelled_rewrite/prompts.example.yaml
+
+  # GPU configuration (comma-separated GPU IDs)
+  gpus: "0,1,2"
+  
+  # Which escalation levels to process (2, 3, and/or 4)
+  escalation_levels: [2, 3, 4]
+  
+  # Per-level fraction of eligible perpetrator escalation-act messages to rewrite
+  injection_ratio:
+    2: 0.05   # Level 2 (mild)
+    3: 0.10   # Level 3 (moderate)
+    4: 0.20   # Level 4 (severe)
+  
+  # Max generation attempts per message before giving up
+  max_retries: 10
+  
+  # Minimum messages to rewrite per conversation
+  min_messages_per_conversation: 1
+  
+  # Random seed for reproducibility (null for random)
+  random_seed: 42
+
+  # Batched GPU generation (messages per batch per escalation level)
+  batch_size: 8
+
+  # Parallel labeling workers (vLLM backend auto-forces this to 1)
+  label_workers: 4
+
+  # Message labeling settings
+  # Set skip_labeling to true if input already has labeled_messages
+  skip_labeling: false
+
+  # Labeling backend: "openai" (default, GPT-5.2 via API) or "vllm" (local server)
+  label_backend: "openai"
+
+  # OpenAI backend options (used when label_backend = openai)
+  gpt_model: "gpt-5.2"
+  gpt_temperature: 0.3
+  # gpt_api_base: null  # Optional: custom OpenAI API base URL
+
+  # vLLM backend options (used when label_backend = vllm)
+  # qwen_model: "Qwen/Qwen3.5-35B-A3B"
+  # vllm_dtype: "auto"
+  # vllm_tensor_parallel_size: 1
+  # vllm_gpu_memory_utilization: 0.90
+  # vllm_max_model_len: 4096
+
+# Stage 7: Convert Dialogues to Minimal Format
+stage_7_convert_dialogues:
+  # Input directory: stage 5 output when stage 6 is disabled (default), or
+  # stage_6_toxic_injection.output_dir ("toxic_injected_dialogues") when enabled.
+  input_dir: "generated_dialogues"
+  
+  # Output directory for converted minimal dialogues
+  output_dir: "converted_dialogues"
+  
+  # Process subdirectories recursively
+  recursive: false
+  
+  # Include both enforced and toxic dialogues for comparison
+  # If true, both versions are saved for observing the injection differences
+  # If false (default), only shows the final toxic version
+  observe_toxic: false
+  
+  # Generate PDF versions alongside JSON files
+  # Creates reader-friendly PDF documents with formatted dialogues
+  generate_pdf: true
+
+  # Post-conversion gibberish review using GPT
+  # Scans all generated dialogues for garbled / nonsensical text
+  review_gibberish: true
+  gpt_model: "gpt-5.2"
+
+# Stage 8: LLM-as-Judge Dialogue Evaluation
+stage_8_llm_judge:
+  # Input directory containing converted dialogues
+  # Defaults to stage_7_convert_dialogues.output_dir if omitted
+  input_dir: "converted_dialogues"
+
+  # Output directory for per-file ratings and batch_summary.json
+  output_dir: "judge_results"
+
+  # Path to judge config YAML (relative to repo root, or absolute)
+  # null = use LLM_judge/configs/judge_config.yaml
+  judge_config: null
+
+  # LLM model override (null = use value in judge_config)
+  model: "gpt-5.2"
+
+  # OpenAI API key override (null = use OPENAI_API_KEY env var or judge_config value)
+  api_key: null

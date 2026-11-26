@@ -1,0 +1,9 @@
+# Escalation forecasting — DeepSeek-V4-Flash (API key from DEEPSEEK_API_KEY)
+llm:
+  backend: "deepseek"
+  model_name: "deepseek-v4-flash"
+  api_key: null
+processing:
+  max_retries: 3
+  retry_delay: 5.0
+output_dir: "results_llm_baseline/deepseek"

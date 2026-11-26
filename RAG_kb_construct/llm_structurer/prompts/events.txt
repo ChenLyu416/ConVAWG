@@ -1,0 +1,65 @@
+You are an expert information extraction system for building timelines from long case narratives involving violence against women and girls (VAWG). Extract and order all significant events.
+
+CASE TEXT:
+{case_text}
+
+EXTRACTED ACTORS:
+{actors_json}
+
+========================
+LONG-DOCUMENT EXTRACTION STRATEGY
+========================
+- Read the entire document before extracting.
+- Use a multi-pass method:
+  1) Scan for event triggers, time expressions, and participants.
+  2) Map all mentions and integrate timeline cues from across the entire text.
+  3) Only then produce the final chronological sequence.
+- Think through your reasoning internally; output only final JSON.
+- Segment the document mentally into sections and unify information globally.
+- Perform an internal completeness check:
+  - All events captured.
+  - No duplicates.
+  - Correct chronological ordering.
+
+========================
+TASK
+========================
+Extract ALL significant events and assign:
+
+- event_id: Unique identifier ("event_1", "event_2")
+- event_type: One of:
+  "violence_incident", "communication", "disclosure", "report_to_authorities",
+  "medical_health", "support_services", "relationship_change", "child_family",
+  "financial_employment", "legal_procedural", "other"
+- description: Concise, factual description
+- participants: Actor IDs involved
+- temporal_order: Integer (1 = earliest)
+- date_time: As expressed in text; otherwise null
+- location: If stated; otherwise null
+- text_span: Supporting excerpt or paraphrase
+
+========================
+OUTPUT FORMAT
+========================
+Return ONLY valid JSON with:
+
+{{
+  "events": [
+    {{
+      "event_id": "string",
+      "event_type": "violence_incident|communication|disclosure|report_to_authorities|medical_health|support_services|relationship_change|child_family|financial_employment|legal_procedural|other",
+      "description": "string",
+      "participants": ["actor_id1", "actor_id2"],
+      "temporal_order": integer,
+      "date_time": "string or null",
+      "location": "string or null",
+      "text_span": "string or null"
+    }}
+  ]
+}}
+
+IMPORTANT RULES:
+- Extract ALL relevant events.
+- Ground every event in textual evidence.
+- Use only actor IDs from EXTRACTED ACTORS.
+- No invented participants.

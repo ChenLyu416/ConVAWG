@@ -1,0 +1,41 @@
+# LLM-as-Judge Configuration — Gemini judge
+# Uses Google Gemini API for LLM scoring; small local models on cuda:2
+
+llm:
+  backend: "gemini"
+  model_name: "gemini-3.1-flash-lite"
+  temperature: 0.1
+  max_tokens: 1024
+  max_retries: 3
+  retry_delay: 5.0
+  # api_key: read from GEMINI_API_KEY env var
+
+processing:
+  max_retries: 3
+  retry_delay: 5
+  max_dialogue_chars: 6000
+  max_global_chars: 20000
+  skip_existing: true
+
+output:
+  output_dir: "./results"
+  pretty_json: true
+
+detoxify:
+  enabled: true
+  model_type: "original"
+  device: "cuda:2"
+  max_chars: 20000
+
+perplexity:
+  enabled: true
+  model_name: "gpt2"
+  device: "cuda:2"
+  max_length: 512
+  stride: 256
+  max_chars: 20000
+
+diversity:
+  enabled: true
+  max_chars: 20000
+  min_turn_tokens: 3

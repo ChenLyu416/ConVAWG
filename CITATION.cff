@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software or the ConVAWG dataset, please cite the paper below."
+title: "ConVAWG"
+type: software
+repository-code: "https://github.com/ChenLyu416/ConVAWG"
+license: MIT
+authors:
+  - {family-names: Lyu, given-names: Chen}
+  - {family-names: Tan, given-names: Xingwei}
+  - {family-names: Cullen, given-names: Simon}
+  - {family-names: Wilson, given-names: Shelley}
+  - {family-names: Arthurs, given-names: Lois}
+  - {family-names: Jhumka, given-names: Arshad}
+  - {family-names: Pergola, given-names: Gabriele}
+preferred-citation:
+  type: article
+  title: "ConVAWG: A Retrieval-Grounded Framework for Controlled Synthetic Dialogue Generation in Violence Against Women and Girls"
+  authors:
+    - {family-names: Lyu, given-names: Chen}
+    - {family-names: Tan, given-names: Xingwei}
+    - {family-names: Cullen, given-names: Simon}
+    - {family-names: Wilson, given-names: Shelley}
+    - {family-names: Arthurs, given-names: Lois}
+    - {family-names: Jhumka, given-names: Arshad}
+    - {family-names: Pergola, given-names: Gabriele}
+  journal: "arXiv preprint arXiv:2608.11200"
+  year: 2026
+  url: "https://arxiv.org/abs/2608.11200"
+  notes: "To appear at EACL 2027"

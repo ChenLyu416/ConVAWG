@@ -1,0 +1,89 @@
+# ============================================================
+#  Persona-Relation Classification — Config
+#  Task: conversation-level perpetrator-victim relationship
+#        classification from the 200-scenario ConVAWG release.
+# ============================================================
+
+data:
+  # Dialogue sources (repo-relative): role-play dialogues with scenario metadata
+  dialogue_dirs:
+    - Generation_Results/generated_dialogues   # pipeline stage-5 output
+
+  dataset_dir: Experiments/Downstream_tasks/persona_relation/dataset
+
+  # Scenario-level stratified split ratios
+  train_ratio: 0.70
+  dev_ratio:   0.15
+  test_ratio:  0.15
+  random_seed: 42
+
+  # Label normalisation — raw strings → canonical class IDs
+  # Classes with < min_class_size scenarios in entire corpus are merged into "other"
+  min_class_size: 4
+  # Cap individual class weights to prevent extreme values for singleton classes
+  max_class_weight: 10.0
+  label_map:
+    intimate_partner: 0
+    ex_partner:       1
+    acquaintance:     2
+    professional:     3
+    family:           4
+    other:            4   # merged → class 4
+  id2label:
+    0: intimate_partner
+    1: ex_partner
+    2: acquaintance
+    3: professional
+    4: family_or_other
+
+# ── Model configs ────────────────────────────────────────────
+# granularity: event  → each dialogue event is one sample (text = enforced_dialogue)
+#              scenario → all events concatenated, one sample per scenario
+
+models:
+  - name: bert-base-uncased
+    granularity: event
+    max_length: 512
+    batch_size: 16
+    grad_accum: 1
+    learning_rate: 2.0e-5
+    weight_decay: 0.01
+    num_epochs: 6
+    warmup_ratio: 0.10
+    early_stopping_patience: 3
+
+  - name: roberta-base
+    granularity: event
+    max_length: 512
+    batch_size: 16
+    grad_accum: 1
+    learning_rate: 2.0e-5
+    weight_decay: 0.01
+    num_epochs: 6
+    warmup_ratio: 0.10
+    early_stopping_patience: 3
+
+  - name: allenai/longformer-base-4096
+    # scenario-level: one sample = full scenario conversation (truncated to 4096 tok)
+    granularity: scenario
+    max_length: 4096
+    batch_size: 2
+    grad_accum: 8
+    learning_rate: 1.0e-5
+    weight_decay: 0.01
+    num_epochs: 10
+    warmup_ratio: 0.10
+    early_stopping_patience: 4
+
+training:
+  output_dir: Experiments/Downstream_tasks/persona_relation/models
+  results_dir: Experiments/Downstream_tasks/persona_relation/results
+  # Use GPU 0 by default (override with CUDA_VISIBLE_DEVICES env var)
+  fp16: true
+  dataloader_num_workers: 2
+  logging_steps: 20
+  eval_strategy: epoch
+  save_strategy: epoch
+  load_best_model_at_end: true
+  metric_for_best_model: macro_f1
+  greater_is_better: true

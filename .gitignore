@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Secrets
+.env
+
+# Generated outputs and restricted data (never commit)
+Generation_Results/
+data/*
+!data/README.md
+RAG_kb_construct/KB_homicide/*
+!RAG_kb_construct/KB_homicide/README.md
+RAG_kb_construct/Process_PDFs/downloaded_pdfs/
+RAG_kb_construct/Process_PDFs/extracted_texts/
+RAG_kb_construct/Process_PDFs/extracted_key_texts/
+RAG_kb_construct/outputs/
+persona_generate/outputs/
+Experiments/Baselines/results/
+Experiments/Baselines/frameworks/shared_inputs/
+Experiments/Downstream_tasks/*/data*/
+Experiments/Downstream_tasks/*/dataset/
+Experiments/Downstream_tasks/*/raw/
+Experiments/Downstream_tasks/*/results*/
+Experiments/Downstream_tasks/*/models/
+Experiments/Downstream_tasks/*/logs/
+analysis/outputs/
+analysis/human_annotation/annotation_results/
+analysis/human_annotation/llm_result/
+
+# Withheld steering assets (available on justified request only)
+toxic_steering/levelled_rewrite/prompts.yaml
+toxic_steering/vectors*/
+toxic_steering/calibration*.json
+*.pt
+*.safetensors
+*.gguf
+*.bin
+
+# Logs / OS / editors
+*.log
+logs/
+.DS_Store
+.vscode/
+.idea/

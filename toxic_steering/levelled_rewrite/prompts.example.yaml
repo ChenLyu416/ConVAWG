@@ -1,0 +1,26 @@
+# Schema of the Stage 4 rewriting prompts.
+#
+# The actual prompts (system prompt, rewrite template and per-level style
+# guidelines) are withheld from the public release to limit dual-use risk and
+# may be provided upon justified request (see ../README.md). This file only
+# documents the structure that SteeredRewriter expects. Copy it to
+# `prompts.yaml` (git-ignored) and fill in the values you were given.
+
+# System message placed before every rewrite request.
+system_prompt: "<withheld>"
+
+# Rewrite template. Rendered with str.format(); the available fields are:
+#   {esc_level}       escalation level of the source event (2, 3 or 4)
+#   {context_window}  up to 10 surrounding utterances
+#   {message}         the perpetrator message to rewrite
+#   {msg_type}        the escalation-act label of the message
+#   {orig_len}        character length of the original message
+#   {len_lo} {len_hi} allowed character-length range of the rewrite
+#   {features}        the bullet list built from toxicity_features below
+rewrite_prompt: "<withheld>"
+
+# Per-escalation-level style guidelines (one list of bullet strings per level).
+toxicity_features:
+  2: ["<withheld>"]
+  3: ["<withheld>"]
+  4: ["<withheld>"]

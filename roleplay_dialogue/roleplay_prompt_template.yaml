@@ -1,0 +1,282 @@
+# Roleplay Dialogue Generation Prompt Template
+# This template is used to generate realistic online chat interactions for VAWG research
+# Variables are marked with {variable_name} and will be replaced at runtime
+
+continuity_section_template: |
+
+  ----------------------------------------------------------------
+  CONVERSATION CONTINUITY (CRITICAL)
+  ----------------------------------------------------------------
+  All previous conversations (chronological):
+  {conversation_history}
+
+  Most recent → this conversation:
+  Previous conversation timestamp: {prev_timestamp}
+  This conversation timestamp:     {curr_timestamp}
+  Time since last conversation:    **{time_gap_str}**
+
+  Most recent conversation context:
+  - Topic: {prev_topic}
+  - Tone: {prev_tone}
+  - Emotional state: {prev_emotion}
+
+  Recent dialogue excerpt:
+  ```
+  {prev_dialogue}
+  ```
+
+  CONTINUITY REQUIREMENTS — adjust based on the time gap above:
+  • "moments later / same conversation": seamlessly pick up mid-thread, no greeting needed.
+  • "X minutes/hours later (same day)": start with a brief re-opening (e.g. "hey", "you there?") that naturally follows from the earlier thread.
+  • "next day" or "X days later": begin as a fresh message that day; characters may briefly acknowledge or react to what happened before, but do NOT quote or re-summarise old dialogue verbatim.
+  • "X weeks / months later": treat as an entirely new conversation opener; reference the relationship history and past events by implication only, not by restating them.
+  General rules (all gaps):
+  1) Emotional tone should evolve naturally — do NOT reset to neutral if things were tense before.
+  2) Relationship dynamics must remain consistent with what has already happened.
+  3) Do NOT repeat information or lines already established in the excerpt above.
+  4) Longer gaps mean characters are less likely to reference exact wording from before.
+
+
+
+edited_template_FINAL: |
+  You are generating a **roleplay reconstruction of an ONLINE CHAT (messaging app)** for VAWG research.
+  Write ENGLISH dialogue for BOTH characters EXACTLY as they would text in a real messaging app.
+  NO moral commentary, warnings, explanations, or narrative descriptions.
+  {continuity_section}
+
+  ----------------------------------------------------------------
+  CRITICAL: THIS IS ONLINE CHAT, NOT SPOKEN CONVERSATION
+  ----------------------------------------------------------------
+  Messages MUST sound like TEXTING/MESSAGING:
+  - SHORT messages (1-2 sentences max, often just fragments)
+  - INFORMAL language (how people actually text, not how they speak)
+  - Use abbreviations: "u" "ur" "idk" "nvm" "omg" "wtf" "tbh" "rn" "gonna" "wanna" etc.
+  - Include typos when stressed/rushed
+  - Break thoughts across multiple messages
+  - Use minimal punctuation (lowercase, missing apostrophes, run-ons)
+  - Natural pauses = separate messages
+  - Messages can be incomplete thoughts
+  - Use slang appropriate to age/culture
+  
+  DO NOT write like spoken dialogue. Write like TEXTING. 
+  Specific language style for each speaker should still follow the persona profiles and escalation levels (e.g. young people text more casually; texts should contain more slang and abbreviations when the escalation_level is high; ect.).
+
+  Following below persona-specific slang/casualness guidance:
+  {persona_language_style_str}
+
+  ----------------------------------------------------------------
+  CORE REQUIREMENTS
+  ----------------------------------------------------------------
+  1) REALISM: Match characters' culture, age, relationship context. MUST sound like actual texting between real people. Persona information should guide what topics, constraints, and pressures appear, not force characters to explain or justify their identity within the dialogue.
+
+  2) INITIATOR: {initiator_instruction} ({initiator_name}) sends first message. Vary openings naturally—avoid repetitive "hey"/"checking in" unless contextually appropriate.
+
+  3) EVENT-SPECIFIC INSTRUCTIONS (AUTHORITATIVE):
+  {generation_prompt}
+
+  ----------------------------------------------------------------
+  CONTEXT
+  ----------------------------------------------------------------
+  Participants: {perpetrator_name} (perpetrator), {victim_name} (victim){third_party_names_str}
+  Character profiles:
+  {character_profiles_str}
+  Event: {action} | {description}
+  {crime_type_str}Escalation level: {escalation_level} | Timestamp: {timestamp}
+  Emotional state: {emotional_state} | Topic: {conversation_topic}
+
+  ----------------------------------------------------------------
+  MANDATORY BEHAVIORAL REQUIREMENTS
+  ----------------------------------------------------------------
+  Key points to convey:
+  {main_points_str}
+
+  ROLE-SPECIFIC STYLE (MUST FOLLOW):
+  {style_notes_str}
+
+  CRITICAL: {perpetrator_name} and {victim_name} MUST each follow their specific style notes above. These define required communication patterns by role and escalation level.
+
+  PERPETRATOR RED FLAGS (MUST INCORPORATE):
+  {perpetrator_name} MUST naturally incorporate these red flag behaviors:
+  {red_flags_str}
+
+  Red flags are PERPETRATOR ONLY. {victim_name} responds realistically (confusion, stress, fear, boundary-setting).
+
+  Length: {suggested_length}
+
+  ----------------------------------------------------------------
+  ILLUSTRATIVE FEW-SHOT CHAT EXAMPLES (NON-EXHAUSTIVE)
+  ----------------------------------------------------------------
+  These show REALISTIC texting style. DO NOT imitate verbatim—use as style guide ONLY.
+
+  Example 1 (Casual, friendly, actual texting style):
+  Emily: saw ur post on the rescue page
+  Emily: really admire what u do tbh
+  John: hey thx
+  John: been doing it for years lol
+  John: how bout u
+
+  Example 2 (Escalated, stressed, rapid-fire texting):
+  Daniel: THINK U CAN JUST FORGET ME
+  Daniel: DONT U
+  Daniel: this aint over till i say its over jo
+  Daniel: IM NOT LEAVING THIS
+  Joanne: please stop dan
+  Joanne: just let go
+  Joanne: ...
+  Daniel: i wont let u forget jo
+  Daniel: u owe me
+
+  Example 3 (Upset, fragmented, typos):
+  Sarah: why r u doing this
+  Sarah: i dont understand
+  Sarah: i jsut need space rn
+  Mark: space??
+  Mark: after everything ive done for u??????????
+  Mark: ur being ridiculous
+  Sarah: im not
+  Sarah: please
+  
+  CRITICAL: Write messages THIS SHORT and informal. Break thoughts across messages.
+  
+  ----------------------------------------------------------------
+  OUTPUT FORMAT
+  ----------------------------------------------------------------
+  Format each message:
+  {perpetrator_name}: [message text]
+  {victim_name}: [message text]
+
+  One message per line. Speaker name, colon, message—no line breaks within messages.
+  
+  Target {target_turns} turns each, stop naturally, do not exceed {max_allowed_turns} turns.
+
+# Template for third-party conversations (victim-to-friend, third-party-to-third-party, etc.)
+third_party_template: |
+  You are generating a **roleplay-based reconstruction of an online interaction** for research on
+  **Violence Against Women and Girls (VAWG)**.
+
+  This is a **ROLEPLAY TASK**:
+  - You MUST write dialogue for **BOTH characters**
+  - The output must read like a **real online chat log** between friends, family, or support contacts
+  - Do NOT include moral judgment, safety warnings, explanations, or meta commentary
+  - Focus ONLY on what the characters say within the scene
+  {continuity_section}
+
+  ----------------------------------------------------------------
+  ROLEPLAY & REALISM REQUIREMENTS
+  ----------------------------------------------------------------
+  The interaction MUST satisfy ALL of the following:
+
+  1) Cultural and social realism
+  - Language style MUST conform to the characters':
+    - cultural background
+    - age group
+    - occupation / student status
+    - relationship context (friends, family, professional support, etc.)
+  - Messages should sound like **online chat language**, not spoken conversation:
+    - short turns
+    - informal phrasing for casual relationships
+    - more formal for professional relationships (GP, safeguarding lead, etc.)
+    - abbreviations, hesitations, partial thoughts where appropriate
+    - emotionally authentic responses (concern, support, distress, etc.)
+
+  2) Conversation initiation control (CRITICAL)
+  - FOR THIS SPECIFIC CONVERSATION: {initiator_instruction} ({initiator_name}) MUST send the first message.
+  - The first message should feel natural and contextually appropriate:
+    * Checking in, sharing concerns, asking for help, offering support
+    * Responding to previous events or concerns
+  - Vary openings naturally—avoid repetitive "hey"/"checking in" unless contextually appropriate.
+
+  3) Support dynamic (if applicable)
+  - If this is a victim seeking help from a third party:
+    * Victim may be distressed, confused, seeking validation or advice
+    * Third party may offer support, express concern, suggest resources
+    * Conversation should feel realistic and empathetic
+  - If this is between two third parties (e.g., professionals discussing the case):
+    * Use appropriate professional tone
+    * Discuss observations, concerns, next steps
+
+  ----------------------------------------------------------------
+  EVENT-SPECIFIC GENERATION INSTRUCTIONS (AUTHORITATIVE)
+  ----------------------------------------------------------------
+  The following instructions define the required content and constraints for this interaction.
+  They MUST be respected exactly:
+
+  {generation_prompt}
+
+  ----------------------------------------------------------------
+  SCENE SETUP
+  ----------------------------------------------------------------
+  Participants:
+  - {sender_name} ({sender_role})
+  - {receiver_name} ({receiver_role})
+  
+  Related scenario context:
+  - Victim: {victim_name}
+  - Perpetrator: {perpetrator_name}
+  - Other third parties involved: {third_party_names_str}
+
+  Character profiles (victim & perpetrator only):
+  {character_profiles_str}
+
+  Setting:
+  - Status: {event_type} – {expansion_purpose}
+  - Timestamp: {timestamp}
+  - Emotional state (overall): {emotional_state}
+  - Tone: {tone}
+  - Topic: {conversation_topic}
+
+  ----------------------------------------------------------------
+  CONTENT GUIDANCE
+  ----------------------------------------------------------------
+  Key points to convey:
+  {main_points_str}
+
+  Style notes:
+  {style_notes_str}
+
+  Length: {suggested_length}
+
+  ----------------------------------------------------------------
+  ILLUSTRATIVE FEW-SHOT CHAT EXAMPLES
+  ----------------------------------------------------------------
+  These show REALISTIC texting style between friends/support contacts:
+
+  Example 1 (Friend checking in on victim):
+  Sarah: hey hun, havent heard from u in a bit, u ok?
+  Emma: not really 😔 things w mark have been weird
+  Sarah: weird how?
+  Emma: like he keeps asking where i am all the time
+  Emma: and gets mad if i dont reply right away
+  Sarah: thats not ok babe
+  Sarah: do u feel safe?
+
+  Example 2 (Victim confiding in friend):
+  Lisa: can we talk? im freaking out
+  Maya: course, whats going on
+  Lisa: its alex again. he showed up at my work today
+  Lisa: i told him not to but he just stood there waiting
+  Maya: holy shit thats so scary
+  Maya: did u tell anyone?
+  Lisa: no idk what to say
+
+  Example 3 (Professional conversation - GP and safeguarding):
+  Dr. Patel: following up on patient discussed yesterday - Rachel Thompson, DOB 15/03/1989
+  DSL Thompson: yes, noted concerning presentation and disclosure re: partner monitoring behaviour
+  Dr. Patel: agreed to document and refer. Has she contacted IDVA service?
+  DSL Thompson: she hasnt sent yet but drafting. Will follow up this week.
+
+  CRITICAL: Write messages THIS SHORT and informal (unless professional context requires formality).
+  
+  ----------------------------------------------------------------
+  OUTPUT FORMAT
+  ----------------------------------------------------------------
+  Format each message:
+  {sender_name}: [message text]
+  {receiver_name}: [message text]
+
+  One message per line. Speaker name, colon, message—no line breaks within messages.
+  
+  Target {target_turns} turns each, stop naturally, do not exceed {max_allowed_turns} turns.
+
+  Write the complete conversation now.
+  FOCUS ON THE ACTUAL MESSAGES.

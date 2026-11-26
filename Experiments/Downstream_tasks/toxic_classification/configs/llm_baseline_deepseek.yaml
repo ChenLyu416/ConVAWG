@@ -1,0 +1,16 @@
+# Zero-shot LLM baseline — DeepSeek
+# API key read from DEEPSEEK_API_KEY env var
+
+llm:
+  backend: "deepseek"
+  model_name: "deepseek-v4-flash"
+  temperature: 0.0
+  max_tokens: 16
+  api_key: null   # falls back to DEEPSEEK_API_KEY
+
+processing:
+  max_retries: 3
+  retry_delay: 5.0
+  skip_existing: true
+
+output_dir: "results_llm_baseline/deepseek"

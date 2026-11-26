@@ -1,0 +1,23 @@
+# Qwen3.5-35B-A3B via HuggingFace Transformers (device_map="auto")
+# Mirrors the judge's hf_transformers backend.
+# No vLLM — loads the model directly with accelerate across GPUs 1,2,3,4.
+
+llm:
+  backend: "huggingface"
+  model_name: "Qwen/Qwen3.5-35B-A3B"
+  cuda_visible_devices: "1,2,3,4"
+  trust_remote_code: true
+  torch_dtype: "bfloat16"
+  temperature: 0.7
+  max_tokens: 4096
+  load_in_8bit: false
+
+processing:
+  chunk_size: 5000
+  chunk_overlap: 500
+  max_retries: 3
+  retry_delay: 5
+paths:
+  prompts_dir: "llm_structurer/prompts"
+  output_dir: "outputs/qwen35_35b"
+  db_path: "outputs/qwen35_35b/cases.db"

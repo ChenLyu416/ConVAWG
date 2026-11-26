@@ -1,0 +1,16 @@
+# Zero-shot LLM baseline — Google Gemini
+# API key read from GEMINI_API_KEY env var
+
+llm:
+  backend: "gemini"
+  model_name: "gemini-3.1-flash-lite"
+  temperature: 0.0
+  max_tokens: 16
+  api_key: null   # falls back to GEMINI_API_KEY
+
+processing:
+  max_retries: 3
+  retry_delay: 5.0
+  skip_existing: true
+
+output_dir: "results_llm_baseline/gemini"

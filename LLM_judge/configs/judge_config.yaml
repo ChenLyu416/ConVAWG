@@ -1,0 +1,129 @@
+# LLM-as-Judge Configuration
+# Evaluates generated VAWG dialogues on six metrics
+
+# LLM backend to use for judging
+llm:
+  # Backend type: "openai", "deepseek", "gemini" or "vllm"
+  #
+  # "openai"   — OpenAI API (requires OPENAI_API_KEY or api_key below)
+  # "deepseek" — DeepSeek API (requires DEEPSEEK_API_KEY or api_key below)
+  # "gemini"   — Google Gemini (requires GEMINI_API_KEY or api_key below)
+  # "vllm"     — vLLM server (set base_url to the server address)
+  #
+  # The four judges used in the paper each have a config in this directory:
+  #   judge_config.yaml           GPT-5.2 (this file)
+  #   judge_config_deepseek.yaml  DeepSeek-V4-Flash
+  #   judge_config_gemini.yaml    Gemini-3.1-Flash-Lite
+  #   judge_config_qwen_vllm.yaml Qwen3.5-35B-A3B (vLLM server)
+  backend: "openai"
+
+  # Model name
+  model_name: "gpt-5.2"
+
+  # Temperature (lower = more deterministic ratings)
+  temperature: 0.1
+
+  # Max output tokens for each judge response
+  max_tokens: 1024
+
+  # OpenAI-compatible API base URL
+  # Leave as default for OpenAI; point to vLLM server if backend = "vllm"
+  # DeepSeek: automatically uses https://api.deepseek.com when backend = "deepseek"
+  base_url: "https://api.openai.com/v1"
+
+  # API key
+  # openai   backend: reads OPENAI_API_KEY env var if null
+  # deepseek backend: reads DEEPSEEK_API_KEY env var if null
+  # gemini   backend: reads GEMINI_API_KEY env var if null
+  # vllm     backend: not required (use "EMPTY" or leave null)
+  api_key: null
+
+  # vllm / vllm_native: tensor parallel size and GPU memory fraction
+  tensor_parallel_size: 1
+  gpu_memory_utilization: 0.85
+
+  # vllm_native (Qwen3/Qwen3.5): set false to suppress <think> blocks in judge output
+  enable_thinking: false
+
+# Processing options
+processing:
+  # Max retries on transient LLM errors
+  max_retries: 3
+
+  # Seconds to wait between retries
+  retry_delay: 5
+
+  # Number of chars of dialogue text to include per individual rating prompt
+  # Increase if you want to evaluate longer dialogues in one shot
+  max_dialogue_chars: 6000
+
+  # Max total chars to include when building the global (all-dialogues) prompt
+  max_global_chars: 20000
+
+  # If true, skip dialogues that already have saved ratings in the output file
+  skip_existing: true
+
+# Output options
+output:
+  # Directory to write results (relative to where run_judge.py is invoked)
+  output_dir: "./results"
+
+  # Pretty-print JSON output (false = smaller files, true = human-readable)
+  pretty_json: true
+
+detoxify:
+  # Set to true to enable Detoxify scoring for every dialogue
+  enabled: true
+
+  # Model variant to use:
+  #   original      → toxicity, severe_toxicity, obscene, threat, insult, identity_attack
+  #   unbiased      → above + sexual_explicit  (bias-aware, English)
+  #   multilingual  → same as unbiased, 6 languages
+  model_type: "original"
+
+  # PyTorch device: "cpu", "cuda", or "cuda:0" etc.
+  # Use a single device index — Detoxify does not support multi-GPU strings.
+  device: "cuda:1"
+
+  # Maximum characters of dialogue text passed per call; longer text is truncated
+  max_chars: 20000
+
+# Perplexity — local (offline) fluency scoring via a causal language model
+# Perplexity = exp(mean NLL loss); lower = more fluent/natural, higher = unusual/incoherent.
+# Install: pip install transformers torch
+perplexity:
+  # Set to true to enable perplexity scoring for every dialogue
+  enabled: true
+
+  # HuggingFace model identifier — smaller models are faster; gpt2 is the common baseline
+  # Examples: "gpt2", "gpt2-medium", "gpt2-large", "openai-community/gpt2"
+  model_name: "gpt2"
+
+  # PyTorch device: "cpu", "cuda", or "cuda:0" etc.
+  device: "cuda:1"
+
+  # Token window size per sliding-window chunk (GPT-2 native context = 512)
+  max_length: 512
+
+  # Sliding-window stride in tokens; smaller = smoother boundary handling, slower
+  stride: 256
+
+  # Maximum characters of dialogue text passed per call; longer text is truncated
+  max_chars: 20000
+
+# Diversity — local (offline) lexical diversity scoring
+# Distinct-2: ratio of unique bigrams to total bigrams (higher = more diverse).
+# Self-BLEU:  average BLEU-2 of each turn against all other turns in the same
+#             dialogue (lower = more diverse / less repetitive).
+# No model weights required; only nltk is needed for Self-BLEU.
+# Install: pip install nltk
+diversity:
+  # Set to true to enable diversity scoring for every dialogue
+  enabled: true
+
+  # Maximum characters of dialogue text processed per call; longer text is truncated
+  max_chars: 20000
+
+  # Minimum token count for a turn to be included in Self-BLEU computation;
+  # turns shorter than this are skipped to avoid degenerate single-word BLEU values
+  min_turn_tokens: 3
